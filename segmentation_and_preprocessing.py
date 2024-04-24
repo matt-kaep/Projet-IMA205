@@ -162,12 +162,10 @@ def create_dataset(images_path, masks, output_dir):
     # Parcourir les images et les masques
     for i, (image_path, mask) in enumerate(zip(images_path, masks)):
         mask = mask.astype(np.uint8)
-        print(mask.shape)
         # Sauvegarder l'image et le masque final
         mask_name = os.path.basename(image_path) + '_pred_mask.png'
         io.imsave(os.path.join(output_dir, mask_name),mask )
         # Afficher la progression
-        print(f'Processed {i+1}/{len(images_path)} images')
 
 
 def resize_with_padding_binary_mask(mask, target_size):
@@ -214,5 +212,10 @@ def compute_and_save_segmented_lesions(liste_chemins_images, output_dir):
         segmented_lesions.append(lesions)
         masks_pred_resized.append(mask_pred_normalized)
         segmented_lesions_square.append(resized_padded_image)
-    create_dataset(liste_chemins_images, segmented_lesions_square, output_dir)
+        if i % 2000 == 0:
+            create_dataset(liste_chemins_images[:i], segmented_lesions[:i], output_dir)
+            masks_pred_resized = []
+            segmented_lesions = []
+            segmented_lesions_square = []
+    create_dataset(liste_chemins_images, segmented_lesions, output_dir)
     
